@@ -1,0 +1,106 @@
+.screen-play {
+  display: grid;
+  grid-template-rows: 72px 1fr;
+}
+
+.playbar {
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  background: rgba(9, 14, 22, 0.74);
+  backdrop-filter: blur(18px);
+}
+
+.playbar-left,
+.playbar-right {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.playbar-right {
+  justify-content: flex-end;
+}
+
+.stage {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at center, rgba(103, 221, 255, 0.05), transparent 22%),
+    linear-gradient(180deg, rgba(5, 8, 15, 0.1), rgba(5, 8, 15, 0.32));
+}
+
+#gameCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.overlay {
+  position: absolute;
+  left: 26px;
+  top: 22px;
+  display: grid;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.headline {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-shadow: 0 0 20px rgba(103, 221, 255, 0.16);
+}
+
+.subline {
+  color: var(--muted);
+  font-size: 13px;
+  max-width: 520px;
+}
+
+.stage::before,
+.stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.stage::before {
+  background:
+    radial-gradient(circle at 57% 50%, rgba(103, 221, 255, 0.08), transparent 12%),
+    radial-gradient(circle at 57% 50%, rgba(158, 123, 255, 0.05), transparent 24%);
+  mix-blend-mode: screen;
+}
+
+.stage::after {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+  background-size: 56px 56px;
+  opacity: 0.24;
+  mask-image: radial-gradient(circle at center, black 32%, transparent 76%);
+}
+
+@media (max-width: 920px) {
+  .screen-play {
+    grid-template-rows: auto 1fr;
+  }
+
+  .playbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .playbar-right {
+    justify-content: flex-start;
+  }
+
+  .stage {
+    min-height: 70vh;
+  }
+}

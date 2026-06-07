@@ -1,0 +1,206 @@
+.screen-title {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 16%, rgba(103, 221, 255, 0.16), transparent 22%),
+    radial-gradient(circle at 82% 26%, rgba(158, 123, 255, 0.16), transparent 24%),
+    linear-gradient(180deg, rgba(5, 8, 15, 0.94), rgba(10, 16, 25, 0.82));
+}
+
+.title-orb {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(2px);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.title-orb-a {
+  width: 260px;
+  height: 260px;
+  left: 10%;
+  top: 18%;
+  background: radial-gradient(circle, rgba(103, 221, 255, 0.34), rgba(103, 221, 255, 0.02) 70%);
+}
+
+.title-orb-b {
+  width: 340px;
+  height: 340px;
+  right: 8%;
+  top: 10%;
+  background: radial-gradient(circle, rgba(158, 123, 255, 0.26), rgba(158, 123, 255, 0.02) 72%);
+}
+
+.title-orb-c {
+  width: 180px;
+  height: 180px;
+  left: 18%;
+  bottom: 12%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.02) 68%);
+}
+
+.title-shell {
+  position: relative;
+  z-index: 1;
+  width: 100vw;
+  height: 100vh;
+  padding: clamp(16px, 3vw, 40px);
+  display: grid;
+  place-items: center;
+}
+
+.title-card {
+  width: min(1320px, calc(100vw - 32px));
+  min-height: min(820px, calc(100vh - 32px));
+  padding: clamp(22px, 3vw, 38px);
+  border-radius: 40px;
+  display: grid;
+  gap: 24px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  align-content: center;
+  justify-items: center;
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.title-card-glow,
+.title-card-grid,
+.title-card-sheen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.title-card-glow {
+  background:
+    radial-gradient(circle at 50% 24%, rgba(103, 221, 255, 0.16), transparent 26%),
+    radial-gradient(circle at 70% 70%, rgba(158, 123, 255, 0.12), transparent 24%),
+    radial-gradient(circle at 30% 78%, rgba(255, 255, 255, 0.06), transparent 20%);
+  opacity: 0.95;
+}
+
+.title-card-grid {
+  opacity: 0.2;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(circle at center, black 25%, transparent 78%);
+}
+
+.title-card-sheen {
+  background:
+    linear-gradient(130deg, transparent 0%, rgba(255, 255, 255, 0.08) 28%, transparent 38%),
+    linear-gradient(210deg, transparent 0%, rgba(103, 221, 255, 0.05) 30%, transparent 42%);
+  transform: translateX(-18%);
+  mix-blend-mode: screen;
+}
+
+.title-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.title-badge {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(103, 221, 255, 0.08);
+  border: 1px solid rgba(103, 221, 255, 0.16);
+  color: #dff8ff;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.title-copy {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  max-width: 980px;
+  position: relative;
+  z-index: 1;
+}
+
+.title-copy h1 {
+  margin: 0;
+  font-size: clamp(36px, 5vw, 64px);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  max-width: 12ch;
+}
+
+.title-copy p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+  max-width: 56ch;
+}
+
+.title-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+.title-actions-center {
+  justify-content: center;
+}
+
+.title-bands {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  color: #bfd1e3;
+  font-size: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.title-bands span {
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(103, 221, 255, 0.12);
+  background: rgba(103, 221, 255, 0.06);
+}
+
+@media (max-width: 920px) {
+  .screen-title {
+    padding: 12px;
+  }
+
+  .title-shell {
+    padding: 0;
+    height: auto;
+    min-height: calc(100vh - 24px);
+  }
+
+  .title-card {
+    width: 100%;
+    min-height: calc(100vh - 24px);
+    padding: 18px;
+    border-radius: 30px;
+  }
+
+  .title-topline {
+    flex-direction: column;
+  }
+
+  .title-copy h1 {
+    max-width: 100%;
+  }
+}

@@ -1,0 +1,130 @@
+:root {
+  color-scheme: dark;
+  --bg: #05080f;
+  --panel: rgba(9, 14, 22, 0.82);
+  --panel-2: rgba(13, 20, 31, 0.92);
+  --text: #f6f8ff;
+  --muted: #93a4bc;
+  --line: rgba(255, 255, 255, 0.08);
+  --accent: #67ddff;
+  --accent-2: #9e7bff;
+  --danger: #ff6b84;
+  --good: #69e4a4;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at top, rgba(103, 221, 255, 0.14), transparent 30%),
+    radial-gradient(circle at 78% 24%, rgba(158, 123, 255, 0.14), transparent 18%),
+    linear-gradient(180deg, #04070c 0%, #09111c 100%);
+  color: var(--text);
+  font-family: "Avenir Next", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+  overflow: hidden;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.screen {
+  width: 100%;
+  height: 100%;
+}
+
+.brand {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.brand-mark {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 30% 30%, #fff, rgba(255, 255, 255, 0.1) 16%, transparent 28%),
+    radial-gradient(circle at center, rgba(103, 221, 255, 0.95), rgba(103, 221, 255, 0.12) 60%, transparent 72%);
+  box-shadow: 0 0 28px rgba(103, 221, 255, 0.24);
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.ghost,
+.primary,
+.panel button,
+.controls button,
+.playbar button,
+.title-actions button,
+.modal button {
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 12px;
+  background: var(--panel-2);
+  color: var(--text);
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease, opacity 0.15s ease;
+}
+
+.ghost:hover,
+.primary:hover:not(:disabled),
+.panel button:hover:not(:disabled),
+.controls button:hover:not(:disabled),
+.playbar button:hover:not(:disabled),
+.title-actions button:hover:not(:disabled),
+.modal button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: rgba(103, 221, 255, 0.42);
+}
+
+.primary {
+  background: linear-gradient(180deg, rgba(103, 221, 255, 0.18), rgba(158, 123, 255, 0.1));
+  border-color: rgba(103, 221, 255, 0.28);
+  font-weight: 700;
+}
+
+.panel button:disabled,
+.controls button:disabled,
+.playbar button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@media (max-width: 920px) {
+  body {
+    overflow: auto;
+  }
+}
