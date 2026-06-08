@@ -42,14 +42,13 @@ export function App() {
           canvasRef={game.canvasRef}
           onBack={game.openSetup}
           onPlayToggle={game.togglePlayback}
-          onReset={game.resetPlayback}
+          onRestart={game.resetPlayback}
           isPlaying={game.isPlaying}
           songName={game.songName}
           bpm={game.bpm}
-          combo={game.combo}
+          accuracy={game.accuracy}
+          maxCombo={game.maxCombo}
           score={game.score}
-          headline={game.headline}
-          subline={game.subline}
         />
       )}
 

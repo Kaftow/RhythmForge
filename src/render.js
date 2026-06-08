@@ -127,7 +127,6 @@ export function createRenderer(canvas) {
 
     drawLanes(scene, left, top, fieldWidth, laneWidth, spawnY, judgeY, approachTime, now);
     drawFx(scene, left, judgeY, fieldWidth);
-    drawHud(scene, left, top, fieldWidth, judgeY);
   }
 
   function drawLanes(scene, left, top, fieldWidth, laneWidth, spawnY, judgeY, approachTime, now) {
@@ -200,32 +199,89 @@ export function createRenderer(canvas) {
     }
   }
 
-  function drawHud(scene, left, top, fieldWidth, judgeY) {
+  function drawOverlayFrame(left, top, fieldWidth, fieldHeight, judgeY, mode = "paused") {
     const { width, height } = state;
-    ctx.save();
-    ctx.fillStyle = "rgba(255,255,255,0.9)";
-    ctx.font = "600 18px Avenir Next, Segoe UI, system-ui, sans-serif";
-    ctx.textAlign = "left";
-    ctx.fillText(scene.songTitle || "No Song Loaded", 28, height - 34);
-
-    ctx.textAlign = "right";
-    ctx.fillText(`${scene.bpm} BPM`, width - 28, height - 34);
-
-    ctx.fillStyle = "rgba(160, 176, 195, 0.8)";
-    ctx.font = "500 13px Avenir Next, Segoe UI, system-ui, sans-serif";
-    ctx.fillText(`Mode: ${scene.mode}  |  Difficulty: ${scene.difficulty.toUpperCase()}`, width - 28, height - 14);
-    ctx.restore();
 
     ctx.save();
-    ctx.strokeStyle = "rgba(255,255,255,0.05)";
+    ctx.fillStyle = "rgba(4, 7, 12, 0.48)";
+    ctx.fillRect(left, top, fieldWidth, fieldHeight);
+
+    const shadow = ctx.createLinearGradient(left, top, left + fieldWidth, top);
+    shadow.addColorStop(0, "rgba(0, 0, 0, 0.15)");
+    shadow.addColorStop(0.45, "rgba(0, 0, 0, 0.48)");
+    shadow.addColorStop(1, "rgba(0, 0, 0, 0.15)");
+    ctx.fillStyle = shadow;
+    ctx.fillRect(left, top, fieldWidth, fieldHeight);
+
+    ctx.strokeStyle = "rgba(255,255,255,0.04)";
     ctx.lineWidth = 1;
-    ctx.strokeRect(left, top, fieldWidth, judgeY - top);
+    ctx.strokeRect(left + 1, top + 1, fieldWidth - 2, fieldHeight - 2);
+
+    ctx.globalCompositeOperation = "lighter";
+    ctx.fillStyle = "rgba(0, 0, 0, 0.36)";
+    ctx.fillRect(left, judgeY - 10, fieldWidth, 20);
+    ctx.restore();
+  }
+
+  function drawPausedOverlay(scene) {
+    if (!scene.paused) return;
+
+    const { width, height } = state;
+    const fieldWidth = Math.min(width * 0.42, 520);
+    const fieldHeight = height * 0.9;
+    const left = width * 0.5 - fieldWidth * 0.5;
+    const top = height * 0.04;
+    const judgeY = height * 0.82;
+
+    drawOverlayFrame(left, top, fieldWidth, fieldHeight, judgeY, "paused");
+
+    ctx.save();
+    ctx.shadowBlur = 28;
+    ctx.shadowColor = "rgba(0, 0, 0, 0.75)";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.92)";
+    ctx.font = "800 44px Avenir Next, Segoe UI, system-ui, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("PAUSED", width / 2, height * 0.45);
+
+    ctx.fillStyle = "rgba(255,255,255,0.72)";
+    ctx.font = "600 14px Avenir Next, Segoe UI, system-ui, sans-serif";
+    ctx.fillText("Press Play to resume", width / 2, height * 0.45 + 34);
+    ctx.restore();
+  }
+
+  function drawCountdownOverlay(scene) {
+    if (!scene.countdownRemainingMs || scene.countdownRemainingMs <= 0) return;
+
+    const { width, height } = state;
+    const fieldWidth = Math.min(width * 0.42, 520);
+    const fieldHeight = height * 0.9;
+    const left = width * 0.5 - fieldWidth * 0.5;
+    const top = height * 0.04;
+    const judgeY = height * 0.82;
+    const count = Math.max(1, Math.ceil(scene.countdownRemainingMs / 1000));
+
+    drawOverlayFrame(left, top, fieldWidth, fieldHeight, judgeY, "countdown");
+
+    ctx.save();
+    ctx.shadowBlur = 24;
+    ctx.shadowColor = "rgba(0, 0, 0, 0.75)";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.94)";
+    ctx.font = "900 72px Avenir Next, Segoe UI, system-ui, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(String(count), width / 2, height * 0.45);
+    ctx.fillStyle = "rgba(255,255,255,0.7)";
+    ctx.font = "600 14px Avenir Next, Segoe UI, system-ui, sans-serif";
+    ctx.fillText("Get ready", width / 2, height * 0.45 + 46);
     ctx.restore();
   }
 
   function draw(scene) {
     drawBackground(scene.timeMs);
     drawPlayfield(scene);
+    drawCountdownOverlay(scene);
+    drawPausedOverlay(scene);
   }
 
   return { resize, draw };

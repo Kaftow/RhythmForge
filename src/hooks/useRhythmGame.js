@@ -18,6 +18,7 @@ function initialUi() {
     noteCount: "0",
     accuracy: "0",
     combo: "0",
+    maxCombo: "0",
     score: "0",
   };
 }
@@ -45,6 +46,7 @@ function createGameState() {
     approachTimeMs: 1450,
     missWindowMs: 120,
     inputOffsetMs: 0,
+    countdownRemainingMs: 0,
   };
 }
 
@@ -52,6 +54,7 @@ export function useRhythmGame() {
   const canvasRef = useRef(null);
   const rendererRef = useRef(null);
   const stateRef = useRef(createGameState());
+  const sceneRef = useRef("title");
   const rafRef = useRef(0);
   const lastFrameRef = useRef(performance.now());
 
@@ -73,6 +76,7 @@ export function useRhythmGame() {
       noteCount: s.chart ? String(s.chart.notes.length) : "0",
       accuracy: String(accuracy),
       combo: String(s.combo),
+      maxCombo: String(s.maxCombo),
       score: String(s.score),
     });
   }, []);
@@ -108,6 +112,11 @@ export function useRhythmGame() {
     state.isPlaying = false;
   }, []);
 
+  const setSceneAndRef = useCallback((nextScene) => {
+    sceneRef.current = nextScene;
+    setScene(nextScene);
+  }, []);
+
   const getPlaybackTime = useCallback(() => {
     const state = stateRef.current;
     if (!state.audioContext) return 0;
@@ -122,31 +131,56 @@ export function useRhythmGame() {
       stateRef.current.pausedAt = getPlaybackTime();
       stopAudio(true);
     }
-    setScene("title");
+    setSceneAndRef("title");
     setSettingsOpen(false);
     setHeadline("Welcome.", "Start from the main menu, then upload a song in Setup.");
-  }, [getPlaybackTime, stopAudio, setHeadline]);
+  }, [getPlaybackTime, setHeadline, setSceneAndRef, stopAudio]);
 
   const openSetup = useCallback(() => {
     if (stateRef.current.isPlaying) {
       stateRef.current.pausedAt = getPlaybackTime();
       stopAudio(true);
     }
-    setScene("setup");
+    setSceneAndRef("setup");
     setSettingsOpen(false);
     const hasChart = !!stateRef.current.chart;
     setHeadline(
       hasChart ? "Chart ready." : "Upload a song.",
-      hasChart ? "Enter Play to start the 4K downscroll stage." : "Choose an audio file and generate a basic 4K chart."
+      hasChart ? "Press Play to start the 4K downscroll stage." : "Choose an audio file and generate a basic 4K chart."
     );
-  }, [getPlaybackTime, stopAudio, setHeadline]);
+  }, [getPlaybackTime, setHeadline, setSceneAndRef, stopAudio]);
+
+  const resetPlayback = useCallback(() => {
+    const state = stateRef.current;
+    stopAudio(false);
+    state.score = 0;
+    state.combo = 0;
+    state.maxCombo = 0;
+    state.hits = 0;
+    state.totalJudges = 0;
+    state.flash = 0;
+    state.judgeText = null;
+    state.effects = [];
+    if (state.chart) {
+      for (const note of state.chart.notes) {
+        note.state = "pending";
+      }
+    }
+    state.countdownRemainingMs = sceneRef.current === "play" ? 3000 : 0;
+    state.pausedAt = 0;
+    setHeadline("Ready.", "");
+    syncUi();
+  }, [setHeadline, stopAudio, syncUi]);
 
   const openPlay = useCallback(() => {
     if (!stateRef.current.chart) return;
-    setScene("play");
+    setSceneAndRef("play");
     setSettingsOpen(false);
-    setHeadline("Ready.", "Use D F J K to hit the four lanes.");
-  }, [setHeadline]);
+    resetPlayback();
+    stateRef.current.countdownRemainingMs = 3000;
+    stateRef.current.pausedAt = 0;
+    setHeadline("Ready.", "");
+  }, [resetPlayback, setHeadline, setSceneAndRef]);
 
   const openSettings = useCallback(() => {
     setSettingsOpen(true);
@@ -185,26 +219,6 @@ export function useRhythmGame() {
     }
     return best;
   }, []);
-
-  const resetPlayback = useCallback(() => {
-    const state = stateRef.current;
-    stopAudio(false);
-    state.score = 0;
-    state.combo = 0;
-    state.maxCombo = 0;
-    state.hits = 0;
-    state.totalJudges = 0;
-    state.flash = 0;
-    state.judgeText = null;
-    state.effects = [];
-    if (state.chart) {
-      for (const note of state.chart.notes) {
-        note.state = "pending";
-      }
-    }
-    setHeadline("Ready.", "Press Play to start from the beginning.");
-    syncUi();
-  }, [setHeadline, stopAudio, syncUi]);
 
   const generateChart = useCallback(() => {
     const state = stateRef.current;
@@ -246,6 +260,7 @@ export function useRhythmGame() {
       state.flash = 0;
       state.effects = [];
       state.judgeText = null;
+      state.countdownRemainingMs = 0;
       setHeadline("Audio loaded.", "Generating a basic 4K chart.");
       syncUi();
       generateChart();
@@ -281,6 +296,7 @@ export function useRhythmGame() {
       state.sourceStartTime = ctx.currentTime - startMs / 1000;
       state.pausedAt = startMs;
       state.isPlaying = true;
+      state.countdownRemainingMs = 0;
       setHeadline("Playing.", "Use D F J K to hit the four lanes.");
       syncUi();
     },
@@ -289,6 +305,7 @@ export function useRhythmGame() {
 
   const togglePlayback = useCallback(() => {
     if (!stateRef.current.chart) return;
+    if (stateRef.current.countdownRemainingMs > 0) return;
     if (stateRef.current.isPlaying) {
       stateRef.current.pausedAt = getPlaybackTime();
       stopAudio(true);
@@ -311,10 +328,6 @@ export function useRhythmGame() {
       if (event.code === "Space" && scene === "play") {
         event.preventDefault();
         togglePlayback();
-        return;
-      }
-      if (event.code === "Enter" && scene === "title") {
-        openSetup();
         return;
       }
       if (scene !== "play" || !stateRef.current.isPlaying || !stateRef.current.chart) return;
@@ -342,7 +355,7 @@ export function useRhythmGame() {
       stateRef.current.hits += 1;
       stateRef.current.totalJudges += 1;
       stateRef.current.maxCombo = Math.max(stateRef.current.maxCombo, stateRef.current.combo);
-      triggerJudgeText(judge.name, judge.color);
+      triggerJudgeText(`${judge.name.toUpperCase()} ${stateRef.current.combo}`, judge.color);
       syncUi();
     },
     [findBestNote, getPlaybackTime, judgeNote, openSetup, scene, syncUi, togglePlayback, triggerJudgeText]
@@ -357,7 +370,7 @@ export function useRhythmGame() {
         note.state = "miss";
         state.combo = 0;
         state.totalJudges += 1;
-        triggerJudgeText("Miss", "#ff6b84");
+        triggerJudgeText("MISS", "#ff6b84");
         syncUi();
       }
     }
@@ -397,25 +410,35 @@ export function useRhythmGame() {
       lastFrameRef.current = now;
 
       if (scene === "play") {
+        const state = stateRef.current;
+        if (state.countdownRemainingMs > 0) {
+          state.countdownRemainingMs = Math.max(0, state.countdownRemainingMs - dt * 1000);
+          if (state.countdownRemainingMs === 0 && !state.isPlaying) {
+            startPlayback(0);
+          }
+        }
+
         const timeMs = getPlaybackTime();
-        if (stateRef.current.isPlaying) {
+        if (state.isPlaying) {
           updateMisses(timeMs - stateRef.current.inputOffsetMs);
         }
         updateEffects(dt);
 
         rendererRef.current?.draw({
           timeMs: timeMs - stateRef.current.inputOffsetMs,
-          notes: stateRef.current.chart ? stateRef.current.chart.notes : [],
-          effects: stateRef.current.effects,
-          flash: stateRef.current.flash,
-          judgeText: stateRef.current.judgeText,
+          notes: state.chart ? state.chart.notes : [],
+          effects: state.effects,
+          flash: state.flash,
+          judgeText: state.judgeText,
           sectorCount: 4,
-          approachTimeMs: stateRef.current.approachTimeMs,
-          missWindowMs: stateRef.current.missWindowMs,
-          bpm: stateRef.current.chart ? stateRef.current.chart.bpm : 0,
+          approachTimeMs: state.approachTimeMs,
+          missWindowMs: state.missWindowMs,
+          bpm: state.chart ? state.chart.bpm : 0,
           mode: "4K Downscroll",
-          difficulty: stateRef.current.chart ? stateRef.current.chart.difficulty : difficulty,
-          songTitle: stateRef.current.selectedFileName || "No Song Loaded",
+          difficulty: state.chart ? state.chart.difficulty : difficulty,
+          songTitle: state.selectedFileName || "No Song Loaded",
+          paused: !state.isPlaying && state.countdownRemainingMs <= 0,
+          countdownRemainingMs: state.countdownRemainingMs,
         });
       }
 
@@ -428,7 +451,7 @@ export function useRhythmGame() {
       window.cancelAnimationFrame(rafRef.current);
       window.removeEventListener("resize", resize);
     };
-  }, [canvasRef, difficulty, getPlaybackTime, scene, updateEffects, updateMisses]);
+  }, [canvasRef, difficulty, getPlaybackTime, scene, startPlayback, updateEffects, updateMisses]);
 
   useEffect(() => {
     window.addEventListener("keydown", onKeyDown);
@@ -471,6 +494,7 @@ export function useRhythmGame() {
     noteCount: ui.noteCount,
     accuracy: ui.accuracy,
     combo: ui.combo,
+    maxCombo: ui.maxCombo,
     score: ui.score,
     headline: ui.headline,
     subline: ui.subline,

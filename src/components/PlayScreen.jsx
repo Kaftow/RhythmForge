@@ -5,14 +5,13 @@ export function PlayScreen({
   canvasRef,
   onBack,
   onPlayToggle,
-  onReset,
+  onRestart,
   isPlaying,
   songName,
   bpm,
-  combo,
+  accuracy,
+  maxCombo,
   score,
-  headline,
-  subline,
 }) {
   return (
     <section className="screen screen-play">
@@ -24,22 +23,35 @@ export function PlayScreen({
           <button className="primary" onClick={onPlayToggle}>
             {isPlaying ? "Pause" : "Play"}
           </button>
-          <button onClick={onReset}>Reset</button>
-        </div>
-
-        <div className="playbar-right">
-          <div><span>Song</span><strong>{songName}</strong></div>
-          <div><span>BPM</span><strong>{bpm}</strong></div>
-          <div><span>Score</span><strong>{score}</strong></div>
-          <div><span>Combo</span><strong>{combo}</strong></div>
+          <button onClick={onRestart}>Restart</button>
         </div>
       </header>
 
       <main className="stage">
         <canvas ref={canvasRef} id="gameCanvas" width="1280" height="720" />
         <div className="overlay">
-          <div className="headline">{headline}</div>
-          <div className="subline">{subline}</div>
+          <div className="status-panel">
+            <div className="song-title">{songName}</div>
+            <div className="status-meta">
+              <div>
+                <span>BPM</span>
+                <strong>{bpm}</strong>
+              </div>
+              <div>
+                <span>Score</span>
+                <strong>{score}</strong>
+              </div>
+              <div>
+                <span>Acc</span>
+                <strong>{accuracy}%</strong>
+              </div>
+              <div>
+                <span>Max Combo</span>
+                <strong>{maxCombo}</strong>
+              </div>
+            </div>
+          </div>
+
         </div>
       </main>
     </section>
