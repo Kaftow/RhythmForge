@@ -14,23 +14,19 @@ export function TitleScreen({ onStart, onSettings }) {
           <div className="title-card-grid" />
           <div className="title-card-sheen" />
 
-          <div className="title-topline">
-            <div className="brand">
-              <div className="brand-mark" />
-              <div>
-                <div className="eyebrow">Ring Rhythm</div>
-                <div className="title">4K Downscroll Rhythm Game</div>
-              </div>
-            </div>
-
-            <div className="title-badge">English UI</div>
+          <div className="title-brand">
+            <div className="brand-mark" />
           </div>
 
-          <div className="title-actions title-actions-center">
-            <button className="primary" onClick={onStart}>
-              Start
+          <h1 className="title-wordmark">Rhythm Forge</h1>
+
+          <div className="title-menu" role="menu" aria-label="Title menu">
+            <button className="title-menu-item primary" onClick={onStart} role="menuitem">
+              <span className="title-menu-label">Start</span>
             </button>
-            <button onClick={onSettings}>Setting</button>
+            <button className="title-menu-item" onClick={onSettings} role="menuitem">
+              <span className="title-menu-label">Setting</span>
+            </button>
           </div>
         </div>
       </div>
