@@ -1,13 +1,19 @@
 .screen-play {
   display: grid;
-  grid-template-rows: 72px 1fr;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100vh;
+  height: 100dvh;
+  min-height: 520px;
+  overflow: hidden;
 }
 
 .playbar {
-  padding: 14px 18px;
+  min-height: 72px;
+  padding: clamp(10px, 2vw, 14px) clamp(12px, 2.5vw, 18px);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
   border-bottom: 1px solid var(--line);
   background: rgba(9, 14, 22, 0.74);
   backdrop-filter: blur(18px);
@@ -18,11 +24,17 @@
   gap: 10px;
   align-items: center;
   flex-wrap: wrap;
+  min-width: 0;
+}
+
+.playbar button {
+  flex: 0 0 auto;
 }
 
 .stage {
   position: relative;
   overflow: hidden;
+  min-height: 0;
   background:
     radial-gradient(circle at center, rgba(103, 221, 255, 0.05), transparent 22%),
     linear-gradient(180deg, rgba(5, 8, 15, 0.1), rgba(5, 8, 15, 0.32));
@@ -36,7 +48,7 @@
 
 .overlay {
   position: absolute;
-  inset: 20px;
+  inset: clamp(10px, 2vw, 20px);
   pointer-events: none;
 }
 
@@ -48,10 +60,11 @@
   position: absolute;
   top: 0;
   left: 0;
-  max-width: min(720px, calc(100% - 160px));
-  padding: 16px 18px;
+  width: min(720px, calc(100% - clamp(96px, 16vw, 160px)));
+  max-width: 100%;
+  padding: clamp(12px, 2vw, 16px) clamp(12px, 2.2vw, 18px);
   display: grid;
-  gap: 14px;
+  gap: clamp(10px, 1.6vw, 14px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 14px;
   background: rgba(9, 14, 22, 0.72);
@@ -70,7 +83,7 @@
 
 .status-meta {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(74px, 1fr));
   gap: 12px 14px;
 }
 
@@ -120,21 +133,21 @@
 }
 
 @media (max-width: 920px) {
-  .screen-play {
-    grid-template-rows: auto 1fr;
-  }
-
   .playbar {
-    flex-direction: column;
-    align-items: stretch;
+    align-items: flex-start;
     gap: 12px;
   }
 
-  .stage {
-    min-height: 70vh;
+  .playbar-left {
+    width: 100%;
   }
+
+  .stage {
+    min-height: 0;
+  }
+
   .status-panel {
-    max-width: 100%;
+    width: min(100%, 560px);
     left: 0;
     right: 0;
   }
@@ -143,4 +156,64 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+}
+
+@media (max-width: 560px) {
+  .screen-play {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  .playbar-left {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .playbar button {
+    width: 100%;
+    padding-inline: 10px;
+  }
+
+  .overlay {
+    inset: 8px;
+  }
+
+  .status-panel {
+    padding: 10px;
+  }
+
+  .song-title {
+    font-size: 17px;
+  }
+
+  .status-meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .status-meta span {
+    font-size: 10px;
+  }
+
+  .status-meta strong {
+    font-size: 18px;
+  }
+}
+
+@media (max-height: 560px) and (orientation: landscape) {
+  .screen-play {
+    min-height: 420px;
+  }
+
+  .playbar {
+    min-height: 56px;
+  }
+
+  .status-panel {
+    width: min(440px, 48%);
+  }
+
+  .status-meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }

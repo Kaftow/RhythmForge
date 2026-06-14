@@ -26,6 +26,16 @@ function roundRect(ctx, x, y, width, height, radius) {
   ctx.closePath();
 }
 
+function getPlayfieldBounds(width, height) {
+  const widthRatio = width < 560 ? 0.72 : width < 920 ? 0.58 : 0.42;
+  const fieldWidth = Math.min(width * widthRatio, 520);
+  const fieldHeight = height * 0.9;
+  const left = width * 0.5 - fieldWidth * 0.5;
+  const top = height * 0.04;
+  const judgeY = height * 0.82;
+  return { fieldWidth, fieldHeight, left, top, judgeY };
+}
+
 export function createRenderer(canvas) {
   const ctx = canvas.getContext("2d");
 
@@ -64,12 +74,8 @@ export function createRenderer(canvas) {
 
   function drawPlayfield(scene) {
     const { width, height } = state;
-    const fieldWidth = Math.min(width * 0.42, 520);
-    const fieldHeight = height * 0.9;
-    const left = width * 0.5 - fieldWidth * 0.5;
-    const top = height * 0.04;
+    const { fieldWidth, fieldHeight, left, top, judgeY } = getPlayfieldBounds(width, height);
     const laneWidth = fieldWidth / 4;
-    const judgeY = height * 0.82;
     const spawnY = height * 0.08;
     const laneNames = ["D", "F", "J", "K"];
     const now = scene.timeMs;
@@ -227,11 +233,7 @@ export function createRenderer(canvas) {
     if (!scene.paused) return;
 
     const { width, height } = state;
-    const fieldWidth = Math.min(width * 0.42, 520);
-    const fieldHeight = height * 0.9;
-    const left = width * 0.5 - fieldWidth * 0.5;
-    const top = height * 0.04;
-    const judgeY = height * 0.82;
+    const { fieldWidth, fieldHeight, left, top, judgeY } = getPlayfieldBounds(width, height);
 
     drawOverlayFrame(left, top, fieldWidth, fieldHeight, judgeY, "paused");
 
@@ -254,11 +256,7 @@ export function createRenderer(canvas) {
     if (!scene.countdownRemainingMs || scene.countdownRemainingMs <= 0) return;
 
     const { width, height } = state;
-    const fieldWidth = Math.min(width * 0.42, 520);
-    const fieldHeight = height * 0.9;
-    const left = width * 0.5 - fieldWidth * 0.5;
-    const top = height * 0.04;
-    const judgeY = height * 0.82;
+    const { fieldWidth, fieldHeight, left, top, judgeY } = getPlayfieldBounds(width, height);
     const count = Math.max(1, Math.ceil(scene.countdownRemainingMs / 1000));
 
     drawOverlayFrame(left, top, fieldWidth, fieldHeight, judgeY, "countdown");

@@ -1,15 +1,19 @@
 .modal {
   position: fixed;
   inset: 0;
+  padding: 16px;
   display: grid;
   place-items: center;
   background: rgba(0, 0, 0, 0.46);
   backdrop-filter: blur(10px);
+  overflow: auto;
 }
 
 .modal-card {
-  width: min(460px, calc(100vw - 32px));
-  padding: 22px;
+  width: min(460px, 100%);
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  padding: clamp(16px, 4vw, 22px);
   border-radius: 24px;
   border: 1px solid var(--line);
   background: rgba(9, 14, 22, 0.92);
@@ -21,6 +25,16 @@
   align-items: center;
   gap: 12px;
   margin-bottom: 18px;
+}
+
+@media (max-width: 420px) {
+  .modal-head {
+    align-items: flex-start;
+  }
+
+  .modal-head button {
+    padding-inline: 10px;
+  }
 }
 
 .modal-title {
